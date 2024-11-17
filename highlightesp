@@ -38,3 +38,19 @@ pcall(
         )
     end
 )
+local b = w:CreateFolder("Main")
+
+b:Toggle(
+    "ESP",
+    function(bool)
+        _G.ESP = bool
+    end
+)
+
+b:ColorPicker(
+    "ESP Color",
+    Color3.fromRGB(255, 255, 255),
+    function(color)
+        _G.ESPColor = color
+    end
+)
