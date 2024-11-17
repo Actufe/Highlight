@@ -1,56 +1,53 @@
-_G.ESP = false
-_G.ESPColor = Color3.fromRGB(255, 255, 255)
+-- This Lua program is an example of a Roblox ESP (Extra Sensory Perception) script.
+-- ESP is a common feature in Roblox games that allows players to see the positions of other players or objects through walls or obstacles.
 
-pcall(
-    function()
-        local highlight = Instance.new("Highlight")
-
-        game:GetService("RunService").RenderStepped:Connect(
-            function()
-                for _, v in pairs(game.Players:GetPlayers()) do
-                    if not v.Character:FindFirstChild("Highlight") then
-                        highlight.FillTransparency = 1
-                        highlight:Clone().Parent = v.Character
-                        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-                    end
-
-                    game.Players.PlayerAdded:Connect(
-                        function(plr)
-                            plr.CharacterAdded:Connect(
-                                function(char)
-                                    if not char:FindFirstChild("Highlight") then
-                                        highlight.FillTransparency = 1
-                                        highlight:Clone().Parent = char
-                                        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-                                    end
-                                end
-                            )
-                        end
-                    )
-                end
-
-                for _, v in pairs(game.Players:GetPlayers()) do
-                    local hl = v.Character:FindFirstChild("Highlight")
-                    hl.Enabled = _G.ESP
-                    hl.OutlineColor = _G.ESPColor
-                end
+-- Define the ESP function
+local function espScript()
+    -- Check if the game is running in Roblox
+    if not game:IsLoaded() then
+        error("The game is not loaded.")
+    end
+    
+    -- Get the local player
+    local player = game.Players.LocalPlayer
+    if not player then
+        error("Failed to get the local player.")
+    end
+    
+    -- Create a loop to continuously update the ESP
+    while true do
+        -- Get all the players in the game
+        local players = game.Players:GetPlayers()
+        
+        -- Loop through each player
+        for _, otherPlayer in ipairs(players) do
+            -- Check if the player is not the local player
+            if otherPlayer ~= player then
+                -- Create an ESP object for the other player
+                local espObject = Instance.new("BoxHandleAdornment")
+                espObject.Name = "ESP_" .. otherPlayer.Name
+                espObject.Size = otherPlayer.Character.HumanoidRootPart.Size
+                espObject.Color3 = Color3.new(1, 0, 0)  -- Red color
+                espObject.Transparency = 0.5
+                espObject.AlwaysOnTop = true
+                espObject.Adornee = otherPlayer.Character.HumanoidRootPart
+                espObject.Parent = otherPlayer.Character.HumanoidRootPart
             end
-        )
+        end
+        
+        -- Delay the loop to reduce performance impact
+        wait(0.1)
     end
-)
-local b = w:CreateFolder("Main")
+end
 
-b:Toggle(
-    "ESP",
-    function(bool)
-        _G.ESP = bool
-    end
-)
+-- Main execution
+print("[INFO] Starting ESP script.")
 
-b:ColorPicker(
-    "ESP Color",
-    Color3.fromRGB(255, 255, 255),
-    function(color)
-        _G.ESPColor = color
-    end
-)
+-- Call the ESP function
+local success, error = pcall(espScript)
+
+if not success then
+    print("[ERROR]", error)
+end
+
+print("[INFO] ESP script finished.")
